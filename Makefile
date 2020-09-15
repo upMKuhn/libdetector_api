@@ -20,7 +20,6 @@ send-request:
 k8s-init:
 	kubectl apply -f ./deployment/cert.yml -f ./deployment/ingress.yml -n ${NAMESPACE}
 	envsubst < ./deployment/secret.yml | kubectl apply -f - -n ${NAMESPACE}
-	envsubst < ./deployment/regcred.yml | kubectl apply -f - -n ${NAMESPACE}
 
 deploy: 
 	envsubst < ./deployment/deployment.yml   | kubectl apply -f - -n ${NAMESPACE}
