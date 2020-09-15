@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: libdetect-tls
+  annotations:
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  rules:
+    - host: libdetect.kuhn.host
+      http:
+        paths:
+          - backend:
+              serviceName: libdetect
+              servicePort: 80
+  tls:
+    - hosts:
+        - libdetect.kuhn.host
+      secretName: libdetect-tls

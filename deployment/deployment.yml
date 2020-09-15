@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: libdetect
+  labels:
+    app: libdetect
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      app: libdetect
+  template:
+    metadata:
+      labels:
+        app: libdetect
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: libdetect
+          image: $LIB_DETECT_IMG
+          envFrom:
+            - secretRef:
+                name: libdetect
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "50m"
+          ports:
+            - containerPort: 8001
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            failureThreshold: 30
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 20
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: libdetect
+  labels:
+    app: libdetect
+spec:
+  selector:
+    app: libdetect
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8001
