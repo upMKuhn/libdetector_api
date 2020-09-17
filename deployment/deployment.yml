@@ -5,7 +5,7 @@ metadata:
   labels:
     app: libdetect
 spec:
-  replicas: 15
+  replicas: 10
   strategy:
     type: RollingUpdate
     rollingUpdate:

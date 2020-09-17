@@ -19,6 +19,9 @@ send-request:
 send-bad-request:
 	cat ./ressources/bad-jquery.min.js | curl -H "Content-Type: text/plain" -X POST -d @- http://localhost:${WEB_PORT}
 
+send-other-request:
+	cat ./ressources/1.js | curl -H "Content-Type: text/plain" -X POST -d @- http://localhost:${WEB_PORT}
+
 
 k8s-init:
 	kubectl apply -f ./deployment/cert.yml -f ./deployment/ingress.yml -n ${NAMESPACE}
