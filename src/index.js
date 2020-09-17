@@ -35,8 +35,12 @@ function launchServer() {
         if (!req.rawBody) {
             return response.status(400).send('Body required')
         }
-
-        const detector = new LibraryDetector(req.rawBody)
+        try {
+            const detector = new LibraryDetector(req.rawBody)
+        } catch (ex) {
+            console.error(ex)
+            return response.status(500).json(ex)
+        }
 
         return response.status(200).json(detector.detect())
     })
