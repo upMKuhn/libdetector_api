@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 ;(async function () {
     launchServer()
 })().catch((error) => {
-    console.error(error)
+    console.error('Fatal Error, exiting...', error)
     process.exit(1)
 })
 
@@ -29,20 +29,22 @@ function launchServer() {
     app.post('/', (req, response) => {
         const authKey = req.headers.authorization
         if ((!authKey && API_KEY) || authKey != API_KEY) {
+            console.log("Access denied" ,req)
             return response.status(401).send()
         }
 
         if (!req.rawBody) {
+            console.log("Access denied" ,req)
             return response.status(400).send('Body required')
         }
         try {
+            console.log('/',req.ip, req.headers["user-agent"])
             const detector = new LibraryDetector(req.rawBody)
+            return response.status(200).json(detector.detect())
         } catch (ex) {
             console.error(ex)
             return response.status(500).json(ex)
         }
-
-        return response.status(200).json(detector.detect())
     })
 
     app.get('/health', async (req, response) => {

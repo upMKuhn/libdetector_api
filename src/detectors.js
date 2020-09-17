@@ -17,13 +17,16 @@ const { UNKNOWN_VERSION, LibraryDetectorTests } = require('./libraries')
 
 module.exports = class LibraryDetector {
     dom = null
-    constructor(scripts) {
-        this.dom = new JSDOM(`<body><script>${scripts}</script></body>`, { runScripts: 'dangerously' })
+    constructor(scriptText) {
+        const scripts = scriptText
+            .split(/\/\/\s*\<\-*\s*SPLIT\s*\-*\>/gi)
+            .map((text) => `<script>${text}</script>`);
+        this.dom = new JSDOM(`<body>${scripts.join('\n\n')}</body>`, { runScripts: 'dangerously' });
     }
 
     detect() {
         const detectedLibs = []
-        this.setGlobalConsts();
+        this.setGlobalConsts()
         for (let libraryName of Object.keys(LibraryDetectorTests)) {
             try {
                 const library = LibraryDetectorTests[libraryName]
@@ -32,7 +35,7 @@ module.exports = class LibraryDetector {
                     detectedLibs.push({ ...result, name: libraryName })
                 }
             } catch (e) {
-                console.error(e)
+                console.error('Detector error', e)
             }
         }
         return detectedLibs
