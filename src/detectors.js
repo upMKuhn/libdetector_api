@@ -12,16 +12,25 @@ module.exports = () => {
         }
     }
 }
-const { JSDOM } = require('jsdom')
+const { JSDOM, VirtualConsole } = require('jsdom')
 const { UNKNOWN_VERSION, LibraryDetectorTests } = require('./libraries')
 
 module.exports = class LibraryDetector {
+    /**
+     * @type {JSDOM}
+     */
     dom = null
     constructor(scriptText) {
-        const scripts = scriptText
-            .split(/\/\/\s*\<\-*\s*SPLIT\s*\-*\>/gi)
-            .map((text) => `<script>${text}</script>`);
-        this.dom = new JSDOM(`<body>${scripts.join('\n\n')}</body>`, { runScripts: 'dangerously' });
+        const testScript = ``
+        let scripts = scriptText
+            .split(/\/\/\s*\<\-*\s*SPLIT\s*\-*\>/gi);
+        scripts.push(testScript);
+        scripts = scripts
+        //.map((text, i)=> `console.log("executing script", ${i}, window.goog);\n` + text + `\nconsole.log("done script", ${i});`)
+        .map((text) => `<script>${text}</script>`)
+        this.dom = new JSDOM(`<head>${scripts.join('\n\n')}</head><body><div></div></body>`, {
+            runScripts: 'dangerously',
+        })
     }
 
     detect() {
