@@ -5,12 +5,12 @@ metadata:
   labels:
     app: libdetect
 spec:
-  replicas: 3
+  replicas: 15
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 50%
+      maxUnavailable: 25%
   selector:
     matchLabels:
       app: libdetect
@@ -30,7 +30,7 @@ spec:
           resources:
             limits:
               memory: "128Mi"
-              cpu: "1000m"
+              cpu: "200m"
           ports:
             - containerPort: 8001
           readinessProbe:
